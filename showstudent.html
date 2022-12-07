@@ -1,0 +1,64 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <title>Show Student Data by Nname</title>
+</head>
+<body>
+  <div class="container">
+    <h3>Show Student Data by Name</h3>
+    <br>
+    <a href="/" class="btn btn-default">Menu</a>
+    <br>
+    <br>
+    <br>
+    <form name="mystudentformular" id="mystudentformular">
+      <label for="id">Student Name:</label><br>
+      <input type="text" id="name" name="name" value=""><br><br>
+      <input type="submit" onclick="getData();return false" value="Show student details" class="btn btn-default">
+      <input type="reset" value="Reset" class="btn btn-default">
+    </form>
+
+    <div id="data">
+
+    </div>
+  </div>
+
+<script>
+
+  async function getData(){
+
+        var adress = ""
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"]
+        });
+
+        var name = document.getElementById('name').value;
+
+        const response = await fetch(adress + '/rest/api/student/' + name)
+       
+        const data = await response.json();
+  
+        var temp = ""
+
+        if (data == "Student not found!") {
+          temp += "<p>Student not found!</p>";
+        }
+
+        else {
+          temp += "<p><b>ID:</b>"+data.ID+"</p><br>"
+          temp += "<p><b>Name:</b>"+data.Name+"</p></br>"
+          temp += "<p><b>Age:</b>"+data.Age+"</p></br>"
+          temp += "<p><b>Registration ID:</b>"+data.Reg+"</p></br>"
+        }
+
+       document.getElementById("data").innerHTML=temp;
+ }
+
+</script>
+</body>
+</html>
