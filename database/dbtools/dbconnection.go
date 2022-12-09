@@ -92,6 +92,22 @@ func SelectStudentBasedId(id string) (model.Student, error) {
 
 }
 
+func SelectStudentBasedReg(reg string) (model.Student, error) {
+
+	db := connect()
+
+	rows := db.QueryRow("select * from students where reg = ?", reg)
+
+	defer db.Close()
+
+	student := model.Student{}
+
+	err := rows.Scan(&student.ID, &student.Name, &student.Age, &student.Reg)
+
+	return student, err
+
+}
+
 func Save(student model.Student) int64 {
 
 	db := connect()

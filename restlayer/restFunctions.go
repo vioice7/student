@@ -55,6 +55,28 @@ func SelectStudentBasedId(response http.ResponseWriter, request *http.Request) {
 
 }
 
+func SelectStudentBasedReg(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	reg, ok := vars["reg"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "Student not Found")
+	}
+
+	student, err := dbtools.SelectStudentBasedReg(reg)
+
+	if err != nil {
+		json.NewEncoder(response).Encode("Student not found!")
+	} else {
+		json.NewEncoder(response).Encode(student)
+	}
+
+}
+
 func SelectAllStudents(response http.ResponseWriter, request *http.Request) {
 
 	students := dbtools.SelectAllStudents()

@@ -19,7 +19,7 @@
       <label for="id">Student Name:</label><br>
       <input type="text" id="name" name="name" value=""><br><br>
       <input type="submit" onclick="getData();return false" value="Show student details" class="btn btn-default">
-      <input type="reset" value="Reset" class="btn btn-default">
+      <input type="reset" value="Reset" class="btn btn-default" onclick="clearData();">
     </form>
 
     <div id="data">
@@ -59,6 +59,10 @@
        document.getElementById("data").innerHTML=temp;
  }
 
+
+  async function clearData(){
+    document.getElementById("data").innerHTML="";
+  }
 </script>
 </body>
 </html>

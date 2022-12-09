@@ -21,6 +21,9 @@ func restConfig(router *mux.Router) {
 	//localhost:8080/rest/api/student/id/{id}
 	restRouter.Methods("GET").Path("/student/id/{id}").HandlerFunc(SelectStudentBasedId)
 
+	//localhost:8080/rest/api/student/reg/{reg}
+	restRouter.Methods("GET").Path("/student/reg/{reg}").HandlerFunc(SelectStudentBasedReg)
+
 	//localhost:8080/rest/api/student/add
 	restRouter.Methods("POST").Path("/student/add").HandlerFunc(SaveStudent)
 
@@ -59,6 +62,9 @@ func restConfig(router *mux.Router) {
 
 	//localhost:8080/showstudentid.html
 	httpRouter.Methods("GET").Path("/showstudentid.html").HandlerFunc(ShowHtmlFile)
+
+	//localhost:8080/showstudentreg.html
+	httpRouter.Methods("GET").Path("/showstudentreg.html").HandlerFunc(ShowHtmlFile)
 
 	//localhost:8080/configHtmlServer.json
 	httpRouter.Methods("GET").Path("/configHtmlServer.json").HandlerFunc(ShowHtmlFile)

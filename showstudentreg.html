@@ -9,15 +9,15 @@
 </head>
 <body>
   <div class="container">
-    <h3>Show Student Data by ID</h3>
+    <h3>Show Student Data by Registration Number</h3>
     <br>
     <a href="/" class="btn btn-default">Menu</a>
     <br>
     <br>
     <br>
     <form name="mystudentformular" id="mystudentformular">
-      <label for="id">Student ID:</label><br>
-      <input type="number" id="id" name="id" value=""><br><br>
+      <label for="id">Student Registration Number:</label><br>
+      <input type="text" id="reg" name="reg" value=""><br><br>
       <input type="submit" onclick="getData();return false" value="Show student details" class="btn btn-default">
       <input type="reset" value="Reset" class="btn btn-default" onclick="clearData();">
     </form>
@@ -37,9 +37,9 @@
             adress = data["adress"]
         });
 
-        var name = document.getElementById('id').value;
+        var name = document.getElementById('reg').value;
 
-        const response = await fetch(adress + '/rest/api/student/id/' + name)
+        const response = await fetch(adress + '/rest/api/student/reg/' + name)
        
         const data = await response.json();
   
