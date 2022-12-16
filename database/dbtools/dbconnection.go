@@ -96,9 +96,9 @@ func SelectStudentBasedReg(reg string) (model.Student, error) {
 
 	db := connect()
 
-	rows := db.QueryRow("select * from students where reg = ?", reg)
-
 	defer db.Close()
+
+	rows := db.QueryRow("select * from students where reg = ?", reg)
 
 	student := model.Student{}
 
@@ -113,6 +113,23 @@ func Save(student model.Student) int64 {
 	db := connect()
 
 	defer db.Close()
+
+	rows := db.QueryRow("select reg from students where reg = ?", student.Reg)
+
+	errDupl := rows.Scan(&student.Reg)
+
+	// if there is no record don't add a record and return
+
+	if student.Reg == "" {
+		return 0
+	}
+
+	// if there is a duplicate entry don't add a record and return
+
+	if errDupl == nil {
+		fmt.Println("Duplicate entry in database! No records added!")
+		return 0
+	}
 
 	save, err := db.Prepare("insert into students(id,name,age,reg) values(?,?,?,?)")
 
@@ -145,7 +162,7 @@ func Update(student model.Student) int64 {
 
 	rows := db.QueryRow("select * from students where id = ?", student.ID)
 
-	// create a new model to comare
+	// create a new model to compare
 
 	studentData := model.Student{}
 
@@ -167,6 +184,19 @@ func Update(student model.Student) int64 {
 
 	if student.Reg == "" {
 		student.Reg = studentData.Reg
+	}
+
+	// check for unique reg
+
+	rowsDupl := db.QueryRow("select reg from students where reg = ?", student.Reg)
+
+	errDupl := rowsDupl.Scan(&student.Reg)
+
+	// if there is a duplicate entry don't add a record and return
+
+	if errDupl == nil {
+		fmt.Println("Duplicate entry in database! No records added!")
+		return 0
 	}
 
 	update, err := db.Prepare("update students set name=?, age=?, reg=? where id=?")
