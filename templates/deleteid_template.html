@@ -1,0 +1,35 @@
+{{define "title"}}Delete Student by ID{{end}}
+
+{{define "content"}}
+<h3 class="">Delete Student by ID</h3>
+<br>
+<a href="/" class="btn btn-default">Menu</a>
+<br>
+<br>
+<br>
+<form name="mystudentformular" id="mystudentformular">
+  <label for="id">Student ID:</label><br>
+  <input type="number" id="idstudent" name="id" value=""><br><br>
+  <input type="submit" onclick="deleteByID()" value="Delete student" class="btn btn-default">
+  <input type="reset" value="Reset" class="btn btn-default">
+</form>
+
+<script>
+    async function deleteByID() {
+
+        var adress = ""
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"]
+        });
+
+        var id = document.getElementById('idstudent').value;
+
+        console.log(document.getElementById('idstudent').value)
+
+        fetch(adress + '/rest/api/student/deleteid/' + id, {
+             method: 'DELETE',
+            }).then(res => res.text()).then(res => console.log(res))
+        }
+  </script>
+{{end}}

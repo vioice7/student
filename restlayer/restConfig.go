@@ -39,35 +39,35 @@ func restConfig(router *mux.Router) {
 	//localhost:8080/rest/api/student/addmultiple
 	restRouter.Methods("POST").Path("/student/addmultiple").HandlerFunc(SaveMultipleStudents)
 
-	//localhost:8080/index.html
-	httpRouter.Methods("GET").Path("/").HandlerFunc(ShowHtmlFile)
-
-	//localhost:8080/showall.html
-	httpRouter.Methods("GET").Path("/showall.html").HandlerFunc(ShowHtmlFile)
-
-	//localhost:8080/create.html
-	httpRouter.Methods("GET").Path("/create.html").HandlerFunc(ShowHtmlFile)
-
-	//localhost:8080/deleteall.html
-	httpRouter.Methods("GET").Path("/deleteall.html").HandlerFunc(ShowHtmlFile)
-
-	//localhost:8080/deletebyid.html
-	httpRouter.Methods("GET").Path("/deleteid.html").HandlerFunc(ShowHtmlFile)
-
-	//localhost:8080/edit.html
-	httpRouter.Methods("GET").Path("/edit.html").HandlerFunc(ShowHtmlFile)
-
-	//localhost:8080/showstudent.html
-	httpRouter.Methods("GET").Path("/showstudent.html").HandlerFunc(ShowHtmlFile)
-
-	//localhost:8080/showstudentid.html
-	httpRouter.Methods("GET").Path("/showstudentid.html").HandlerFunc(ShowHtmlFile)
-
-	//localhost:8080/showstudentreg.html
-	httpRouter.Methods("GET").Path("/showstudentreg.html").HandlerFunc(ShowHtmlFile)
-
 	//localhost:8080/configHtmlServer.json
 	httpRouter.Methods("GET").Path("/configHtmlServer.json").HandlerFunc(ShowHtmlFile)
+
+	//localhost:8080/index.html
+	httpRouter.HandleFunc("/", indexTemplateHandling)
+
+	//localhost:8080/create.html
+	httpRouter.HandleFunc("/create.html", createTemplateHandling)
+
+	//localhost:8080/deleteall.html
+	httpRouter.HandleFunc("/deleteall.html", deleteAllTemplateHandling)
+
+	//localhost:8080/deleteid.html
+	httpRouter.HandleFunc("/deleteid.html", deleteIdTemplateHandling)
+
+	//localhost:8080/edit.html
+	httpRouter.HandleFunc("/edit.html", editTemplateHandling)
+
+	//localhost:8080/showall.html
+	httpRouter.HandleFunc("/showall.html", showAllTemplateHandling)
+
+	//localhost:8080/.html
+	httpRouter.HandleFunc("/showstudent.html", showStudentTemplateHandling)
+
+	//localhost:8080/.html
+	httpRouter.HandleFunc("/showstudentid.html", showStudentIdTemplateHandling)
+
+	//localhost:8080/.html
+	httpRouter.HandleFunc("/showstudentreg.html", showStudentRegTemplateHandling)
 }
 
 func RestStart(endpoint string) error {
