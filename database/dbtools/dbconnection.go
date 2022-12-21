@@ -290,6 +290,19 @@ func SaveMultipleStudents(students []model.Student) int64 {
 
 	for _, student := range students {
 
+		// check for unique reg
+
+		rowsDupl := db.QueryRow("select reg from students where reg = ?", student.Reg)
+
+		errDupl := rowsDupl.Scan(&student.Reg)
+
+		// if there is a duplicate entry don't add a record and return
+
+		if errDupl == nil {
+			fmt.Println("Duplicate entry in database! No records added!")
+			continue
+		}
+
 		save, err := db.Prepare("insert into students(id,name,age,reg) values(?,?,?,?)")
 
 		if err != nil {
