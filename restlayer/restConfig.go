@@ -60,13 +60,13 @@ func restConfig(router *mux.Router) {
 	//localhost:8080/showall.html
 	httpRouter.HandleFunc("/showall.html", showAllTemplateHandling)
 
-	//localhost:8080/.html
+	//localhost:8080/showstudent.html
 	httpRouter.HandleFunc("/showstudent.html", showStudentTemplateHandling)
 
-	//localhost:8080/.html
+	//localhost:8080/showstudentid.html
 	httpRouter.HandleFunc("/showstudentid.html", showStudentIdTemplateHandling)
 
-	//localhost:8080/.html
+	//localhost:8080/showstudentreg.html
 	httpRouter.HandleFunc("/showstudentreg.html", showStudentRegTemplateHandling)
 }
 
