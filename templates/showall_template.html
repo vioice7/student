@@ -76,7 +76,14 @@
 
     const response = await fetch(adress + '/rest/api/students');
     const exportObj = await response.json();
-    //console.log(exportObj);
+    // console.log(exportObj);
+    // scan each object and delete the ID of a key
+    Object.keys(exportObj).forEach(function(i){
+      delete exportObj[i]['ID']
+    });
+
+    console.log(exportObj);
+
     exportName = "students";
     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
     var downloadAnchorNode = document.createElement('a');
