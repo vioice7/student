@@ -13,6 +13,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// ---
+// Rest Layer API Students
+// ---
+
 func SelectStudentBasedName(response http.ResponseWriter, request *http.Request) {
 
 	vars := mux.Vars(request)
@@ -22,13 +26,13 @@ func SelectStudentBasedName(response http.ResponseWriter, request *http.Request)
 	if !ok {
 		response.WriteHeader(http.StatusBadRequest)
 
-		fmt.Fprintln(response, "Student not Found")
+		fmt.Fprintln(response, "Student not found.")
 	}
 
 	student, err := dbtools.SelectStudentBasedName(name)
 
 	if err != nil {
-		json.NewEncoder(response).Encode("Student not found!")
+		json.NewEncoder(response).Encode("Student not found.")
 	} else {
 		json.NewEncoder(response).Encode(student)
 	}
@@ -44,17 +48,16 @@ func SelectStudentBasedId(response http.ResponseWriter, request *http.Request) {
 	if !ok {
 		response.WriteHeader(http.StatusBadRequest)
 
-		fmt.Fprintln(response, "Student not Found")
+		fmt.Fprintln(response, "Student not found.")
 	}
 
 	student, err := dbtools.SelectStudentBasedId(id)
 
 	if err != nil {
-		json.NewEncoder(response).Encode("Student not found!")
+		json.NewEncoder(response).Encode("Student not found.")
 	} else {
 		json.NewEncoder(response).Encode(student)
 	}
-
 }
 
 func SelectStudentBasedReg(response http.ResponseWriter, request *http.Request) {
@@ -66,13 +69,13 @@ func SelectStudentBasedReg(response http.ResponseWriter, request *http.Request) 
 	if !ok {
 		response.WriteHeader(http.StatusBadRequest)
 
-		fmt.Fprintln(response, "Student not Found")
+		fmt.Fprintln(response, "Student not found.")
 	}
 
 	student, err := dbtools.SelectStudentBasedReg(reg)
 
 	if err != nil {
-		json.NewEncoder(response).Encode("Student not found!")
+		json.NewEncoder(response).Encode("Student not found.")
 	} else {
 		json.NewEncoder(response).Encode(student)
 	}
@@ -100,7 +103,7 @@ func SaveStudent(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	dbtools.Save(student)
+	dbtools.SaveStudent(student)
 
 }
 
@@ -118,7 +121,7 @@ func UpdateStudent(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	dbtools.Update(student)
+	dbtools.UpdateStudent(student)
 
 }
 
@@ -131,25 +134,25 @@ func DeleteStudentId(response http.ResponseWriter, request *http.Request) {
 	if !ok {
 		response.WriteHeader(http.StatusBadRequest)
 
-		fmt.Fprintln(response, "Id student not Found")
+		fmt.Fprintln(response, "Id student not found.")
 	}
 
 	// convert string to int
 	idStudent, err := strconv.Atoi(id)
 
 	if err != nil {
-		fmt.Println("Cannot convert string to int")
+		fmt.Println("Cannot convert string to int.")
 	}
 
-	student := dbtools.DeleteId(idStudent)
+	student := dbtools.DeleteStudentId(idStudent)
 
 	json.NewEncoder(response).Encode(student)
 
 }
 
-func DeleteAll(response http.ResponseWriter, request *http.Request) {
+func DeleteAllStudents(response http.ResponseWriter, request *http.Request) {
 
-	student := dbtools.DeleteAll()
+	student := dbtools.DeleteAllStudents()
 
 	json.NewEncoder(response).Encode(student)
 
@@ -173,6 +176,174 @@ func SaveMultipleStudents(response http.ResponseWriter, request *http.Request) {
 
 }
 
+// ---
+// Rest Layer API Teachers
+// ---
+
+func SelectAllTeachers(response http.ResponseWriter, request *http.Request) {
+
+	teachers := dbtools.SelectAllTeachers()
+
+	json.NewEncoder(response).Encode(teachers)
+
+}
+
+func SaveTeacher(response http.ResponseWriter, request *http.Request) {
+
+	var teacher model.Teacher
+
+	err := json.NewDecoder(request.Body).Decode(&teacher)
+
+	if err != nil {
+		fmt.Println(err)
+
+		response.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(response, "Could not add new Teacher by error: %v.", err)
+		return
+	}
+
+	dbtools.SaveTeacher(teacher)
+
+}
+
+func DeleteTeacherId(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	id, ok := vars["id"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "Id teacher not found.")
+	}
+
+	// convert string to int
+	idTeacher, err := strconv.Atoi(id)
+
+	if err != nil {
+		fmt.Println("Cannot convert string to int.")
+	}
+
+	teacher := dbtools.DeleteTeacherId(idTeacher)
+
+	json.NewEncoder(response).Encode(teacher)
+
+}
+
+func DeleteAllTeachers(response http.ResponseWriter, request *http.Request) {
+
+	teacher := dbtools.DeleteAllTeachers()
+
+	json.NewEncoder(response).Encode(teacher)
+
+}
+
+func UpdateTeacher(response http.ResponseWriter, request *http.Request) {
+
+	var teacher model.Teacher
+
+	err := json.NewDecoder(request.Body).Decode(&teacher)
+
+	if err != nil {
+		fmt.Println(err)
+
+		response.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(response, "Could not update teacher by error: %v.", err)
+		return
+	}
+
+	dbtools.UpdateTeacher(teacher)
+
+}
+
+func SelectTeacherBasedId(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	id, ok := vars["id"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "Teacher not found.")
+	}
+
+	teacher, err := dbtools.SelectTeacherBasedId(id)
+
+	if err != nil {
+		json.NewEncoder(response).Encode("Teacher not found.")
+	} else {
+		json.NewEncoder(response).Encode(teacher)
+	}
+}
+
+func SelectTeacherBasedName(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	name, ok := vars["name"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "Teacher not found.")
+	}
+
+	teacher, err := dbtools.SelectTeacherBasedName(name)
+
+	if err != nil {
+		json.NewEncoder(response).Encode("Teacher not found.")
+	} else {
+		json.NewEncoder(response).Encode(teacher)
+	}
+
+}
+
+func SelectTeacherBasedReg(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	reg, ok := vars["reg"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "Teacher not found.")
+	}
+
+	teacher, err := dbtools.SelectTeacherBasedReg(reg)
+
+	if err != nil {
+		json.NewEncoder(response).Encode("Teacher not found.")
+	} else {
+		json.NewEncoder(response).Encode(teacher)
+	}
+
+}
+
+func SaveMultipleTeachers(response http.ResponseWriter, request *http.Request) {
+
+	var teachers []model.Teacher
+
+	err := json.NewDecoder(request.Body).Decode(&teachers)
+
+	if err != nil {
+		fmt.Println(err)
+
+		response.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(response, "Could not update teacher by error: %v.", err)
+		return
+	}
+
+	dbtools.SaveMultipleTeachers(teachers)
+
+}
+
+// ---
+// HTML Files Template Handling
+// ---
+
 // --- These functions allow to show the data in HTML format on the same domain (CORS policy avoid) ---
 
 func ShowHtmlFile(response http.ResponseWriter, request *http.Request) {
@@ -180,6 +351,10 @@ func ShowHtmlFile(response http.ResponseWriter, request *http.Request) {
 	http.ServeFile(response, request, request.URL.Path[1:])
 
 }
+
+// ---
+// HTML Template Handling
+// ---
 
 func indexTemplateHandling(response http.ResponseWriter, request *http.Request) {
 
@@ -210,11 +385,15 @@ func indexTemplateHandling(response http.ResponseWriter, request *http.Request) 
 	}
 }
 
-func createTemplateHandling(response http.ResponseWriter, request *http.Request) {
+// ---
+// Student HTML Template Handling
+// ---
+
+func createStudentTemplateHandling(response http.ResponseWriter, request *http.Request) {
 
 	files := []string{
 		"templates/base_template.html",
-		"templates/create_template.html",
+		"templates/student/create_student_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)
@@ -231,11 +410,11 @@ func createTemplateHandling(response http.ResponseWriter, request *http.Request)
 	}
 }
 
-func deleteAllTemplateHandling(response http.ResponseWriter, request *http.Request) {
+func deleteAllStudentsTemplateHandling(response http.ResponseWriter, request *http.Request) {
 
 	files := []string{
 		"templates/base_template.html",
-		"templates/deleteall_template.html",
+		"templates/student/delete_all_student_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)
@@ -252,11 +431,11 @@ func deleteAllTemplateHandling(response http.ResponseWriter, request *http.Reque
 	}
 }
 
-func deleteIdTemplateHandling(response http.ResponseWriter, request *http.Request) {
+func deleteIdStudentTemplateHandling(response http.ResponseWriter, request *http.Request) {
 
 	files := []string{
 		"templates/base_template.html",
-		"templates/deleteid_template.html",
+		"templates/student/delete_id_student_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)
@@ -273,11 +452,11 @@ func deleteIdTemplateHandling(response http.ResponseWriter, request *http.Reques
 	}
 }
 
-func editTemplateHandling(response http.ResponseWriter, request *http.Request) {
+func editIdStudentTemplateHandling(response http.ResponseWriter, request *http.Request) {
 
 	files := []string{
 		"templates/base_template.html",
-		"templates/edit_template.html",
+		"templates/student/edit_student_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)
@@ -294,11 +473,11 @@ func editTemplateHandling(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func showAllTemplateHandling(response http.ResponseWriter, request *http.Request) {
+func showAllStudentsTemplateHandling(response http.ResponseWriter, request *http.Request) {
 
 	files := []string{
 		"templates/base_template.html",
-		"templates/showall_template.html",
+		"templates/student/show_all_student_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)
@@ -315,11 +494,11 @@ func showAllTemplateHandling(response http.ResponseWriter, request *http.Request
 	}
 }
 
-func showStudentTemplateHandling(response http.ResponseWriter, request *http.Request) {
+func showNameStudentTemplateHandling(response http.ResponseWriter, request *http.Request) {
 
 	files := []string{
 		"templates/base_template.html",
-		"templates/showstudent_template.html",
+		"templates/student/show_name_student_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)
@@ -336,11 +515,11 @@ func showStudentTemplateHandling(response http.ResponseWriter, request *http.Req
 	}
 }
 
-func showStudentIdTemplateHandling(response http.ResponseWriter, request *http.Request) {
+func showIdStudentTemplateHandling(response http.ResponseWriter, request *http.Request) {
 
 	files := []string{
 		"templates/base_template.html",
-		"templates/showstudentid_template.html",
+		"templates/student/show_id_student_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)
@@ -357,11 +536,183 @@ func showStudentIdTemplateHandling(response http.ResponseWriter, request *http.R
 	}
 }
 
-func showStudentRegTemplateHandling(response http.ResponseWriter, request *http.Request) {
+func showRegStudentTemplateHandling(response http.ResponseWriter, request *http.Request) {
 
 	files := []string{
 		"templates/base_template.html",
-		"templates/showstudentreg_template.html",
+		"templates/student/show_reg_student_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+// ---
+// HTML Teacher Template Handling
+// ---
+
+func showAllTeachersTemplateHandling(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/teacher/show_all_teacher_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+func createTeacherTemplateHandling(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/teacher/create_teacher_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+func deleteIdTeacherTemplateHandling(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/teacher/delete_id_teacher_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+func deleteAllTeachersTemplateHandling(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/teacher/delete_all_teacher_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+func editIdTeacherTemplateHandling(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/teacher/edit_teacher_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+func showIdTeacherTemplateHandling(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/teacher/show_id_teacher_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+func showNameTeacherTemplateHandling(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/teacher/show_name_teacher_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+func showRegTeacherTemplateHandling(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/teacher/show_reg_teacher_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)
