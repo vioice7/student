@@ -75,6 +75,22 @@ func restConfig(router *mux.Router) {
 	restRouter.Methods("POST").Path("/teacher/addmultiple").HandlerFunc(SaveMultipleTeachers)
 
 	// ---
+	// Courses API
+	// ---
+
+	//localhost:8080/rest/api/course/add
+	restRouter.Methods("PUT").Path("/course/add").HandlerFunc(SaveCourse)
+
+	// localhost:8080/rest/api/courses
+	restRouter.Methods("GET").Path("/courses").HandlerFunc(SelectAllCourses)
+
+	//localhost:8080/rest/api/course/addmultiple
+	restRouter.Methods("POST").Path("/course/addmultiple").HandlerFunc(SaveMultipleCourses)
+
+	//localhost:8080/rest/api/course/deleteall
+	restRouter.Methods("DELETE").Path("/course/deleteall").HandlerFunc(DeleteAllCourses)
+
+	// ---
 	// File Show System
 	// ---
 
@@ -143,6 +159,19 @@ func restConfig(router *mux.Router) {
 
 	//localhost:8080/show_reg_teacher.html
 	httpRouter.HandleFunc("/show_reg_teacher.html", showRegTeacherTemplateHandling)
+
+	// ---
+	// HTML Files Show Courses
+	// ---
+
+	//localhost:8080/create_course.html
+	httpRouter.HandleFunc("/create_course.html", createCourseTemplateHandling)
+
+	//localhost:8080/show_all_course.html
+	httpRouter.HandleFunc("/show_all_course.html", showAllCoursesTemplateHandling)
+
+	//localhost:8080/delete_all_course.html
+	httpRouter.HandleFunc("/delete_all_course.html", deleteAllCoursesTemplateHandling)
 }
 
 func RestStart(endpoint string) error {

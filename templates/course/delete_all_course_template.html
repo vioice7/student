@@ -1,0 +1,26 @@
+{{define "title"}}Delete All Courses{{end}}
+
+{{define "content"}}
+    <h3 class="">Delete All Courses</h1>
+    <br>
+    <a href="/" class="btn btn-default">Menu</a>
+    <br>
+    <br>
+    <br>
+    <a href="javascript:deleteAll();" class="btn btn-default">Clear all courses</a>
+
+    <script>
+        async function deleteAll() {
+ 
+         var adress = ""
+ 
+         $.getJSON('configHtmlServer.json', function(data) {         
+             adress = data["adress"]
+         });
+ 
+         fetch(adress + '/rest/api/course/deleteall', {
+              method: 'DELETE',
+             }).then(res => res.text()).then(res => console.log(res))
+         }
+     </script>
+{{end}}

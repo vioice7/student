@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 27, 2022 at 03:28 PM
+-- Generation Time: Dec 29, 2022 at 09:05 AM
 -- Server version: 10.1.33-MariaDB
 -- PHP Version: 7.2.6
 
@@ -31,7 +31,9 @@ SET time_zone = "+00:00";
 CREATE TABLE `courses` (
   `id` int(4) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `idreg` varchar(50) NOT NULL
+  `description` varchar(500) NOT NULL,
+  `teacherreg` varchar(50) NOT NULL,
+  `reg` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -69,7 +71,7 @@ CREATE TABLE `teachers` (
 --
 ALTER TABLE `courses`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idreg` (`idreg`);
+  ADD UNIQUE KEY `reg` (`reg`);
 
 --
 -- Indexes for table `students`

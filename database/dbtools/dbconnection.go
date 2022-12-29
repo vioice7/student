@@ -9,6 +9,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+//
+// Conection and initialase mysql
+//
+
 var driverName string
 var dataSourceName string
 
@@ -28,6 +32,10 @@ func connect() (db *sql.DB) {
 
 	return db
 }
+
+// -------------------------
+// Students table connection
+// -------------------------
 
 func SelectAllStudents() []model.Student {
 
@@ -329,6 +337,10 @@ func SaveMultipleStudents(students []model.Student) int64 {
 
 }
 
+// -------------------------
+// Teachers table connection
+// -------------------------
+
 func SelectAllTeachers() []model.Teacher {
 
 	db := connect()
@@ -627,4 +639,166 @@ func SaveMultipleTeachers(teachers []model.Teacher) int64 {
 
 	return nrAddedTeachers
 
+}
+
+// -----------------------
+// Course table connection
+// -----------------------
+
+func SaveCourse(course model.Course) int64 {
+
+	db := connect()
+
+	defer db.Close()
+
+	rows := db.QueryRow("select reg from course where reg = ?", course.Reg)
+
+	errDupl := rows.Scan(&course.Reg)
+
+	// if there is no record don't add a record and return
+
+	if course.Reg == "" {
+		return 0
+	}
+
+	// if there is a duplicate entry don't add a record and return
+
+	if errDupl == nil {
+		fmt.Println("Duplicate entry in database! No records added!")
+		return 0
+	}
+
+	save, err := db.Prepare("insert into courses(id,name,description,teacherreg,reg) values(?,?,?,?,?)")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	result, err := save.Exec(course.ID, course.Name, course.Description, course.TeacherReg, course.Reg)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	courseID, err := result.LastInsertId()
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	return courseID
+}
+
+func SelectAllCourses() []model.Course {
+
+	db := connect()
+
+	rows, err := db.Query("select * from courses")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	defer db.Close()
+
+	courses := []model.Course{}
+
+	for rows.Next() {
+
+		course := model.Course{}
+
+		err = rows.Scan(&course.ID, &course.Name, &course.Description, &course.TeacherReg, &course.Reg)
+
+		if err != nil {
+			log.Fatal(err.Error())
+			continue
+		}
+
+		courses = append(courses, course)
+	}
+
+	return courses
+
+}
+
+func SaveMultipleCourses(courses []model.Course) int64 {
+
+	db := connect()
+
+	defer db.Close()
+
+	var nrAddedCourses int64
+
+	for _, course := range courses {
+
+		// check for unique reg
+
+		rowsDupl := db.QueryRow("select reg from courses where reg = ?", course.Reg)
+
+		errDupl := rowsDupl.Scan(&course.Reg)
+
+		// if there is a duplicate entry don't add a record and return
+
+		if errDupl == nil {
+			fmt.Println("Duplicate entry in database! No records added!")
+			continue
+		}
+
+		save, err := db.Prepare("insert into courses(id,name,description,teacherreg,reg) values(?,?,?,?,?)")
+
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		result, err := save.Exec(course.ID, course.Name, course.Description, course.TeacherReg, course.Reg)
+
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		courseID, err := result.LastInsertId()
+
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		fmt.Println("Course ID ", courseID, " inserted!")
+
+	}
+
+	return nrAddedCourses
+
+}
+
+func DeleteAllCourses() int64 {
+
+	db := connect()
+
+	defer db.Close()
+
+	// count records before truncate table
+
+	var count int64
+
+	err := db.QueryRow("select count(*) from courses").Scan(&count)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// truncate table to delete all records
+
+	deleteAll, err := db.Prepare("truncate table courses")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	_, err = deleteAll.Exec()
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	return count
 }
