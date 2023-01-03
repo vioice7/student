@@ -388,9 +388,52 @@ func SaveMultipleCourses(response http.ResponseWriter, request *http.Request) {
 
 }
 
+func UpdateCourse(response http.ResponseWriter, request *http.Request) {
+
+	var course model.Course
+
+	err := json.NewDecoder(request.Body).Decode(&course)
+
+	if err != nil {
+		fmt.Println(err)
+
+		response.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(response, "Could not update course by error: %v.", err)
+		return
+	}
+
+	dbtools.UpdateCourse(course)
+
+}
+
 func DeleteAllCourses(response http.ResponseWriter, request *http.Request) {
 
 	course := dbtools.DeleteAllCourses()
+
+	json.NewEncoder(response).Encode(course)
+
+}
+
+func DeleteCourseId(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	id, ok := vars["id"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "Id course not found.")
+	}
+
+	// convert string to int
+	idCourse, err := strconv.Atoi(id)
+
+	if err != nil {
+		fmt.Println("Cannot convert string to int.")
+	}
+
+	course := dbtools.DeleteCourseId(idCourse)
 
 	json.NewEncoder(response).Encode(course)
 
@@ -831,11 +874,53 @@ func showAllCoursesTemplateHandling(response http.ResponseWriter, request *http.
 	}
 }
 
+func editIdCourseTemplateHandling(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/course/edit_course_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
 func deleteAllCoursesTemplateHandling(response http.ResponseWriter, request *http.Request) {
 
 	files := []string{
 		"templates/base_template.html",
 		"templates/course/delete_all_course_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+func deleteIdCourseTemplateHandling(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/course/delete_id_course_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)

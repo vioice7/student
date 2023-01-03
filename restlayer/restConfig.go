@@ -90,6 +90,12 @@ func restConfig(router *mux.Router) {
 	//localhost:8080/rest/api/course/deleteall
 	restRouter.Methods("DELETE").Path("/course/deleteall").HandlerFunc(DeleteAllCourses)
 
+	//localhost:8080/rest/api/course/deleteid/{id}
+	restRouter.Methods("DELETE").Path("/course/deleteid/{id}").HandlerFunc(DeleteCourseId)
+
+	//localhost:8080/rest/api/course/edit
+	restRouter.Methods("POST").Path("/course/edit").HandlerFunc(UpdateCourse)
+
 	// ---
 	// File Show System
 	// ---
@@ -170,8 +176,15 @@ func restConfig(router *mux.Router) {
 	//localhost:8080/show_all_course.html
 	httpRouter.HandleFunc("/show_all_course.html", showAllCoursesTemplateHandling)
 
+	//localhost:8080/edit_id_course.html
+	httpRouter.HandleFunc("/edit_id_course.html", editIdCourseTemplateHandling)
+
 	//localhost:8080/delete_all_course.html
 	httpRouter.HandleFunc("/delete_all_course.html", deleteAllCoursesTemplateHandling)
+
+	//localhost:8080/delete_id_course.html
+	httpRouter.HandleFunc("/delete_id_course.html", deleteIdCourseTemplateHandling)
+
 }
 
 func RestStart(endpoint string) error {

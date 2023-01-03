@@ -1,0 +1,35 @@
+{{define "title"}}Delete Course by ID{{end}}
+
+{{define "content"}}
+<h3 class="">Delete Course by ID</h3>
+<br>
+<a href="/" class="btn btn-default">Menu</a>
+<br>
+<br>
+<br>
+<form name="mycourseformular" id="mycourseformular">
+  <label for="id">Course ID:</label><br>
+  <input type="number" id="idcourse" name="id" value=""><br><br>
+  <input type="submit" onclick="deleteByID()" value="Delete course" class="btn btn-default">
+  <input type="reset" value="Reset" class="btn btn-default">
+</form>
+
+<script>
+    async function deleteByID() {
+
+        var adress = ""
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"]
+        });
+
+        var id = document.getElementById('idcourse').value;
+
+        console.log(document.getElementById('idcourse').value)
+
+        fetch(adress + '/rest/api/course/deleteid/' + id, {
+             method: 'DELETE',
+            }).then(res => res.text()).then(res => console.log(res))
+        }
+  </script>
+{{end}}
