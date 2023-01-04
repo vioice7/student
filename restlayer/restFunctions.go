@@ -439,6 +439,24 @@ func DeleteCourseId(response http.ResponseWriter, request *http.Request) {
 
 }
 
+func SelectCourseBasedTeacherReg(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	teacherreg, ok := vars["teacherreg"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "Course not found.")
+	}
+
+	course := dbtools.SelectAllCoursesTeacherReg(teacherreg)
+
+	json.NewEncoder(response).Encode(course)
+
+}
+
 // ---
 // HTML Files Template Handling
 // ---
@@ -921,6 +939,27 @@ func deleteIdCourseTemplateHandling(response http.ResponseWriter, request *http.
 	files := []string{
 		"templates/base_template.html",
 		"templates/course/delete_id_course_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+func showAllCoursesTeacherReg(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/course/show_all_course_teacher_reg_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)

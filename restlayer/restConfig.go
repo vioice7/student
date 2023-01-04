@@ -96,6 +96,9 @@ func restConfig(router *mux.Router) {
 	//localhost:8080/rest/api/course/edit
 	restRouter.Methods("POST").Path("/course/edit").HandlerFunc(UpdateCourse)
 
+	//localhost:8080/rest/api/course/showallteacherreg/{teacherreg}
+	restRouter.Methods("GET").Path("/course/showallteacherreg/{teacherreg}").HandlerFunc(SelectCourseBasedTeacherReg)
+
 	// ---
 	// File Show System
 	// ---
@@ -184,6 +187,9 @@ func restConfig(router *mux.Router) {
 
 	//localhost:8080/delete_id_course.html
 	httpRouter.HandleFunc("/delete_id_course.html", deleteIdCourseTemplateHandling)
+
+	//localhost:8080/show_all_course_teacher_reg.html
+	httpRouter.HandleFunc("/show_all_course_teacher_reg.html", showAllCoursesTeacherReg)
 
 }
 

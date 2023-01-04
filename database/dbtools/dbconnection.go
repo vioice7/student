@@ -936,3 +936,35 @@ func UpdateCourse(course model.Course) int64 {
 	return rowsEffected
 
 }
+
+func SelectAllCoursesTeacherReg(teacherreg string) []model.Course {
+
+	db := connect()
+
+	defer db.Close()
+
+	rows, err := db.Query("select * from courses where teacherreg = ?", teacherreg)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	courses := []model.Course{}
+
+	for rows.Next() {
+
+		course := model.Course{}
+
+		err = rows.Scan(&course.ID, &course.Name, &course.Description, &course.TeacherReg, &course.Reg)
+
+		if err != nil {
+			log.Fatal(err.Error())
+			continue
+		}
+
+		courses = append(courses, course)
+	}
+
+	return courses
+
+}
