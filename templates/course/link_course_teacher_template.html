@@ -1,0 +1,218 @@
+{{define "title"}}Link Course To A Teacher{{end}}
+
+{{define "content"}}
+<h3>Link Course To A Teacher</h3>
+<br>
+<a href="/" class="btn btn-default">Menu</a>
+<br>
+<br>
+
+<form name="myteacherformular" id="myteacherformular" class="col-md-4">
+    <label for="teacher">Teacher Name and Registration:</label><br>
+    <select name="teacher" id="teacher" class="form-control" onchange="checkConnectOnOff();" onfocus="this.selectedIndex = -1;">
+      <option value=""></option>
+    </select>
+
+    <br><br>
+
+    <label for="course">Course Name and Registration Number:</label><br>
+    <select name="course" id="course" class="form-control" onchange="checkConnectOnOff();" onfocus="this.selectedIndex = -1;">
+      <option value=""></option>
+    </select>
+
+    <br><br>
+
+    <input type="submit" onclick="connectTeacherCourse();return false" value="" class="btn btn-default" id="connect">
+</form>
+
+
+<script>
+   
+    getAllTeacherNameReg();
+    getAllCourseNameReg();
+
+    initialCheck();
+
+    async function initialCheck() {
+        var adress = "";
+
+        var courseId = await initCheckCourse();
+        var teacherId = await initCheckTeacher();
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"];
+        });
+
+        if (courseId != "" && teacherId != "") {
+                const response = await fetch(adress + '/rest/api/teachercourse/check/' + teacherId + '/' + courseId);
+
+                const data = await response.json();
+
+                if(data == 'connected') {
+                    document.getElementById("connect").value = "Disconnect";
+                } else {
+                    document.getElementById("connect").value = "Connect";
+                }
+        }
+    }
+
+    async function initCheckCourse() {
+        var adress = "";
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"];
+        });
+
+        const response = await fetch(adress + '/rest/api/courses');
+
+        const data = await response.json();
+
+        if(data.length == 0) {
+            return 0;
+        } else {
+            return data[0].ID;
+        }
+
+    }
+
+    async function initCheckTeacher() {
+        var adress = "";
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"];
+        });
+
+        const response = await fetch(adress + '/rest/api/teachers');
+        // console.log(response);
+        const data = await response.json();
+
+        if(data.length == 0) {
+            return 0;
+        } else {
+            return data[0].ID;
+        }
+
+    }
+
+    async function connectTeacherCourse() {
+        connectOnOff();
+        await new Promise(r => setTimeout(r, 10));
+        checkConnectOnOff();
+    }
+
+    async function checkConnectOnOff() {
+
+        var teacher_current = document.getElementById('teacher').value;
+        var course_current = document.getElementById('course').value;
+
+        console.log(teacher_current + " : " + course_current);
+
+        var adress = "";
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"];
+        });
+
+        if (teacher_current != "" && course_current != "") {
+                const response = await fetch(adress + '/rest/api/teachercourse/check/' + teacher_current + '/' + course_current);
+
+                const data = await response.json();
+
+                console.log(data);
+
+                if(data == 'connected') {
+                    document.getElementById("connect").value = "Disconnect";
+                } else {
+                    document.getElementById("connect").value = "Connect";
+                }
+        }
+
+    }
+
+    async function connectOnOff() {
+
+        var adress = "";
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"];
+        });
+
+        var teacher_current = document.getElementById('teacher').value;
+        var course_current = document.getElementById('course').value;
+
+        const settings = {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+        };
+
+        if (teacher_current != "" && course_current != "") {
+                const response = await fetch(adress + '/rest/api/teachercourse/link/' + teacher_current + '/' + course_current, settings);
+        }
+
+    }
+
+    async function getAllCourseNameReg() {
+
+        var adress = "";
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"];
+        });
+
+        const response = await fetch(adress + '/rest/api/courses');
+
+        const data = await response.json();
+
+        var temp = "";
+
+        // make the list option
+
+        for(i = 0; i < data.length; i++)  
+        {
+                temp += "<option value='" + data[i].ID + "' >" + data[i].Name + " " + data[i].Reg + "</option>";
+        }
+
+        if(temp == "") {
+            document.getElementById("course").outerHTML="<strong>There are no courses in the database!</strong>";
+            document.getElementById("connect").outerHTML="";
+        } else {
+            document.getElementById("course").innerHTML=temp;
+        }
+
+    }
+
+    async function getAllTeacherNameReg() {
+
+        var adress = "";
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"];
+        });
+
+        const response = await fetch(adress + '/rest/api/teachers');
+
+        const data = await response.json();
+
+        var temp = "";
+
+        // make the list option
+
+        for(i = 0; i < data.length; i++)  
+        {
+                temp += "<option value='" + data[i].ID + "' >" + data[i].Name + " " + data[i].Reg + "</option>";
+        }
+
+        if(temp == "") {
+            document.getElementById("teacher").outerHTML="<strong>There are no teachers in the database!</strong>";
+            document.getElementById("connect").outerHTML="";
+        } else {
+            document.getElementById("teacher").innerHTML=temp;
+        }
+
+    }
+
+  </script>
+{{end}}

@@ -53,14 +53,13 @@
          // console.log(length);
          
          console.log(data);
-         var temp="<tr><th>ID</th><th>Course Name</th><th>Course Description</th><th>Course Registration Teacher ID</th><th>Course Registration ID</th></tr>";
+         var temp="<tr><th>ID</th><th>Course Name</th><th>Course Description</th><th>Course Registration ID</th></tr>";
          for(i = 0; i < length; i++)
          {
             temp+="<tr>";
             temp+="<td>" + data[i].ID + "</td>";
             temp+="<td>" + data[i].Name + "</td>";
             temp+="<td>" + data[i].Description + "</td>";
-            temp+="<td>" + data[i].TeacherReg + "</td>";
             temp+="<td>" + data[i].Reg + "</td>";
             temp+="</tr>";
          }

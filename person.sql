@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 29, 2022 at 09:05 AM
+-- Generation Time: Jan 13, 2023 at 02:01 PM
 -- Server version: 10.1.33-MariaDB
 -- PHP Version: 7.2.6
 
@@ -32,7 +32,6 @@ CREATE TABLE `courses` (
   `id` int(4) NOT NULL,
   `name` varchar(50) NOT NULL,
   `description` varchar(500) NOT NULL,
-  `teacherreg` varchar(50) NOT NULL,
   `reg` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -52,6 +51,17 @@ CREATE TABLE `students` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `students_courses`
+--
+
+CREATE TABLE `students_courses` (
+  `student_id` int(50) NOT NULL,
+  `course_id` int(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `teachers`
 --
 
@@ -60,6 +70,17 @@ CREATE TABLE `teachers` (
   `name` varchar(50) NOT NULL,
   `age` int(4) NOT NULL,
   `reg` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `teachers_courses`
+--
+
+CREATE TABLE `teachers_courses` (
+  `teacher_id` int(50) NOT NULL,
+  `course_id` int(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -81,11 +102,25 @@ ALTER TABLE `students`
   ADD UNIQUE KEY `reg` (`reg`);
 
 --
+-- Indexes for table `students_courses`
+--
+ALTER TABLE `students_courses`
+  ADD UNIQUE KEY `student_id` (`student_id`,`course_id`),
+  ADD KEY `course_id` (`course_id`);
+
+--
 -- Indexes for table `teachers`
 --
 ALTER TABLE `teachers`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `reg` (`reg`);
+
+--
+-- Indexes for table `teachers_courses`
+--
+ALTER TABLE `teachers_courses`
+  ADD UNIQUE KEY `teacher_id` (`teacher_id`,`course_id`),
+  ADD KEY `course_id` (`course_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -108,6 +143,24 @@ ALTER TABLE `students`
 --
 ALTER TABLE `teachers`
   MODIFY `id` int(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `students_courses`
+--
+ALTER TABLE `students_courses`
+  ADD CONSTRAINT `students_courses_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`),
+  ADD CONSTRAINT `students_courses_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`);
+
+--
+-- Constraints for table `teachers_courses`
+--
+ALTER TABLE `teachers_courses`
+  ADD CONSTRAINT `teachers_courses_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`),
+  ADD CONSTRAINT `teachers_courses_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

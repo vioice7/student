@@ -439,21 +439,163 @@ func DeleteCourseId(response http.ResponseWriter, request *http.Request) {
 
 }
 
-func SelectCourseBasedTeacherReg(response http.ResponseWriter, request *http.Request) {
+// Teacher Course Link Functions
+
+func TeacherCourseLink(response http.ResponseWriter, request *http.Request) {
 
 	vars := mux.Vars(request)
 
-	teacherreg, ok := vars["teacherreg"]
+	idTeacher, ok := vars["teacherid"]
 
 	if !ok {
 		response.WriteHeader(http.StatusBadRequest)
 
-		fmt.Fprintln(response, "Course not found.")
+		fmt.Fprintln(response, "ID teacher not found.")
 	}
 
-	course := dbtools.SelectAllCoursesTeacherReg(teacherreg)
+	idCourse, ok := vars["courseid"]
 
-	json.NewEncoder(response).Encode(course)
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "ID course not found.")
+	}
+
+	idCoursei, err := strconv.Atoi(idCourse)
+
+	if err != nil {
+		fmt.Println("Cannot convert string to int.")
+	}
+
+	idTeacheri, err := strconv.Atoi(idTeacher)
+
+	if err != nil {
+		fmt.Println("Cannot convert string to int.")
+	}
+
+	dbtools.ConnectionCoursesTeachers(idTeacheri, idCoursei)
+
+}
+
+func CheckTeacherCourseLink(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	idTeacher, ok := vars["teacherid"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "ID teacher not found.")
+	}
+
+	idCourse, ok := vars["courseid"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "ID course not found.")
+	}
+
+	idCoursei, err := strconv.Atoi(idCourse)
+
+	if err != nil {
+		fmt.Println("Cannot convert string to int.")
+	}
+
+	idTeacheri, err := strconv.Atoi(idTeacher)
+
+	if err != nil {
+		fmt.Println("Cannot convert string to int.")
+	}
+
+	checkConnection := dbtools.CheckConnectionCoursesTeachers(idTeacheri, idCoursei)
+
+	if checkConnection {
+		json.NewEncoder(response).Encode("connected")
+	} else {
+		json.NewEncoder(response).Encode("notconnected")
+	}
+
+}
+
+// Student Course Link Functions
+
+func StudentCourseLink(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	idStudent, ok := vars["studentid"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "ID student not found.")
+	}
+
+	idCourse, ok := vars["courseid"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "ID course not found.")
+	}
+
+	idCoursei, err := strconv.Atoi(idCourse)
+
+	if err != nil {
+		fmt.Println("Cannot convert string to int.")
+	}
+
+	idStudenti, err := strconv.Atoi(idStudent)
+
+	if err != nil {
+		fmt.Println("Cannot convert string to int.")
+	}
+
+	dbtools.ConnectionCoursesStudents(idStudenti, idCoursei)
+
+}
+
+func CheckStudentCourseLink(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	idStudent, ok := vars["studentid"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "ID student not found.")
+	}
+
+	idCourse, ok := vars["courseid"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "ID course not found.")
+	}
+
+	idCoursei, err := strconv.Atoi(idCourse)
+
+	if err != nil {
+		fmt.Println("Cannot convert string to int.")
+	}
+
+	idStudenti, err := strconv.Atoi(idStudent)
+
+	if err != nil {
+		fmt.Println("Cannot convert string to int.")
+	}
+
+	checkConnection := dbtools.CheckConnectionCoursesStudents(idStudenti, idCoursei)
+
+	if checkConnection {
+		json.NewEncoder(response).Encode("connected")
+	} else {
+		json.NewEncoder(response).Encode("notconnected")
+	}
 
 }
 
@@ -955,11 +1097,32 @@ func deleteIdCourseTemplateHandling(response http.ResponseWriter, request *http.
 	}
 }
 
-func showAllCoursesTeacherReg(response http.ResponseWriter, request *http.Request) {
+func linkCourseTeacherTemplateHandling(response http.ResponseWriter, request *http.Request) {
 
 	files := []string{
 		"templates/base_template.html",
-		"templates/course/show_all_course_teacher_reg_template.html",
+		"templates/course/link_course_teacher_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+func linkCourseStudentTemplateHandling(response http.ResponseWriter, request *http.Request) {
+
+	files := []string{
+		"templates/base_template.html",
+		"templates/course/link_course_student_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)

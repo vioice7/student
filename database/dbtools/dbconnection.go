@@ -246,7 +246,45 @@ func DeleteStudentId(id int) int64 {
 
 	defer db.Close()
 
-	delete, err := db.Prepare("delete from students where id=?")
+	// remove all connections from students_courses table regarding student_id so that we can delete student with id in the next table
+
+	// ---
+
+	delete, err := db.Prepare("delete from students_courses where student_id = ?")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	_, err = delete.Exec(id)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// ---
+
+	deleteStudentCourse, err := db.Prepare("delete from students_courses where student_id = ?")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	resultStudentsCourses, err := deleteStudentCourse.Exec(id)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	rowsAffectedStudentsCourses, err := resultStudentsCourses.RowsAffected()
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	fmt.Println("Rows affected from students_courses", rowsAffectedStudentsCourses)
+
+	delete, err = db.Prepare("delete from students where id = ?")
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -273,19 +311,37 @@ func DeleteAllStudents() int64 {
 
 	defer db.Close()
 
-	// count records before truncate table
+	// remove all connections from students_courses table regarding all students so that we can delete students in the next table
 
-	var count int64
+	// ---
 
-	err := db.QueryRow("select count(*) from students").Scan(&count)
+	delete, err := db.Prepare("delete from students_courses where student_id > 0")
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	// truncate table to delete all records
+	_, err = delete.Exec()
 
-	deleteAll, err := db.Prepare("truncate table students")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// ---
+
+	// count records before delete table
+
+	var count int64
+
+	err = db.QueryRow("select count(*) from students").Scan(&count)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// delete table to delete all records
+
+	deleteAll, err := db.Prepare("delete from students where id > 0")
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -297,7 +353,20 @@ func DeleteAllStudents() int64 {
 		log.Fatal(err.Error())
 	}
 
+	alterTable, err := db.Prepare("alter table students auto_increment = 1")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	_, err = alterTable.Exec()
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	return count
+
 }
 
 func SaveMultipleStudents(students []model.Student) int64 {
@@ -434,7 +503,25 @@ func DeleteTeacherId(id int) int64 {
 
 	defer db.Close()
 
-	delete, err := db.Prepare("delete from teachers where id=?")
+	// remove all connections from teachers_courses table regarding teacher_id so that we can delete teacher with id in the next table
+
+	// ---
+
+	delete, err := db.Prepare("delete from teachers_courses where teacher_id = ?")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	_, err = delete.Exec(id)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// ---
+
+	delete, err = db.Prepare("delete from teachers where id = ?")
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -461,19 +548,37 @@ func DeleteAllTeachers() int64 {
 
 	defer db.Close()
 
-	// count records before truncate table
+	// remove all connections from teachers_courses table regarding all teachers so that we can delete teachers in the next table
 
-	var count int64
+	// ---
 
-	err := db.QueryRow("select count(*) from teachers").Scan(&count)
+	delete, err := db.Prepare("delete from teachers_courses where teacher_id > 0")
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	// truncate table to delete all records
+	_, err = delete.Exec()
 
-	deleteAll, err := db.Prepare("truncate table teachers")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// ---
+
+	// count records before delete table
+
+	var count int64
+
+	err = db.QueryRow("select count(*) from teachers").Scan(&count)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// delete table to delete all records
+
+	deleteAll, err := db.Prepare("delete from teachers where id > 0")
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -485,7 +590,20 @@ func DeleteAllTeachers() int64 {
 		log.Fatal(err.Error())
 	}
 
+	alterTable, err := db.Prepare("alter table teachers auto_increment = 1")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	_, err = alterTable.Exec()
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	return count
+
 }
 
 func UpdateTeacher(teacher model.Teacher) int64 {
@@ -691,13 +809,13 @@ func SaveCourse(course model.Course) int64 {
 		return 0
 	}
 
-	save, err := db.Prepare("insert into courses(id,name,description,teacherreg,reg) values(?,?,?,?,?)")
+	save, err := db.Prepare("insert into courses(id,name,description,reg) values(?,?,?,?)")
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	result, err := save.Exec(course.ID, course.Name, course.Description, course.TeacherReg, course.Reg)
+	result, err := save.Exec(course.ID, course.Name, course.Description, course.Reg)
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -730,7 +848,7 @@ func SelectAllCourses() []model.Course {
 
 		course := model.Course{}
 
-		err = rows.Scan(&course.ID, &course.Name, &course.Description, &course.TeacherReg, &course.Reg)
+		err = rows.Scan(&course.ID, &course.Name, &course.Description, &course.Reg)
 
 		if err != nil {
 			log.Fatal(err.Error())
@@ -767,13 +885,13 @@ func SaveMultipleCourses(courses []model.Course) int64 {
 			continue
 		}
 
-		save, err := db.Prepare("insert into courses(id,name,description,teacherreg,reg) values(?,?,?,?,?)")
+		save, err := db.Prepare("insert into courses(id,name,description,reg) values(?,?,?,?)")
 
 		if err != nil {
 			log.Fatal(err.Error())
 		}
 
-		result, err := save.Exec(course.ID, course.Name, course.Description, course.TeacherReg, course.Reg)
+		result, err := save.Exec(course.ID, course.Name, course.Description, course.Reg)
 
 		if err != nil {
 			log.Fatal(err.Error())
@@ -799,25 +917,67 @@ func DeleteAllCourses() int64 {
 
 	defer db.Close()
 
-	// count records before truncate table
+	// remove all connections from students_courses and tables_courses table regarding all students and teachers so that we can delete courses in the next table
 
-	var count int64
+	// ---
 
-	err := db.QueryRow("select count(*) from courses").Scan(&count)
+	delete, err := db.Prepare("delete from students_courses where student_id > 0")
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	// truncate table to delete all records
+	_, err = delete.Exec()
 
-	deleteAll, err := db.Prepare("truncate table courses")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	delete, err = db.Prepare("delete from teachers_courses where teacher_id > 0")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	_, err = delete.Exec()
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// ---
+
+	// count records before delete table
+
+	var count int64
+
+	err = db.QueryRow("select count(*) from courses").Scan(&count)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// delete table to delete all records
+
+	deleteAll, err := db.Prepare("delete from courses where id > 0")
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	_, err = deleteAll.Exec()
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	alterTable, err := db.Prepare("alter table courses auto_increment = 1")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	_, err = alterTable.Exec()
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -832,7 +992,37 @@ func DeleteCourseId(id int) int64 {
 
 	defer db.Close()
 
-	delete, err := db.Prepare("delete from courses where id=?")
+	// remove all connections from students_courses and teachers_courses table regarding student_id and teacher_id so that we can delete course with id in the next table
+
+	// ---
+
+	delete, err := db.Prepare("delete from students_courses where student_id = ?")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	_, err = delete.Exec(id)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	delete, err = db.Prepare("delete from teachers_courses where teacher_id = ?")
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	_, err = delete.Exec(id)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// ---
+
+	delete, err = db.Prepare("delete from courses where id = ?")
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -891,7 +1081,7 @@ func UpdateCourse(course model.Course) int64 {
 
 	rows := db.QueryRow("select * from courses where id = ?", course.ID)
 
-	err := rows.Scan(&courseData.ID, &courseData.Name, &courseData.Description, &courseData.TeacherReg, &courseData.Reg)
+	err := rows.Scan(&courseData.ID, &courseData.Name, &courseData.Description, &courseData.Reg)
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -907,21 +1097,17 @@ func UpdateCourse(course model.Course) int64 {
 		course.Description = courseData.Description
 	}
 
-	if course.TeacherReg == "" {
-		course.TeacherReg = courseData.TeacherReg
-	}
-
 	if course.Reg == "" {
 		course.Reg = courseData.Reg
 	}
 
-	update, err := db.Prepare("update courses set name=?, description=?, teacherreg=?, reg=? where id=?")
+	update, err := db.Prepare("update courses set name=?, description=?, reg=? where id=?")
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	result, err := update.Exec(course.Name, course.Description, course.TeacherReg, course.Reg, course.ID)
+	result, err := update.Exec(course.Name, course.Description, course.Reg, course.ID)
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -937,34 +1123,208 @@ func UpdateCourse(course model.Course) int64 {
 
 }
 
-func SelectAllCoursesTeacherReg(teacherreg string) []model.Course {
+func ConnectionCoursesTeachers(teacherID int, courseID int) int64 {
 
 	db := connect()
 
 	defer db.Close()
 
-	rows, err := db.Query("select * from courses where teacherreg = ?", teacherreg)
+	// check if there are records to compare
+	// if there is a record in the database it is deleted and if there is not a record in the database it is created
+
+	// fmt.Println("teacher id :", teacherID)
+	// fmt.Println("course id :", courseID)
+
+	rowsCheck := db.QueryRow("SELECT * FROM teachers_courses WHERE teacher_id LIKE ? AND course_id LIKE ? LIMIT 1", teacherID, courseID)
+
+	var tch, crs int
+
+	err := rowsCheck.Scan(&tch, &crs)
 
 	if err != nil {
-		log.Fatal(err.Error())
-	}
 
-	courses := []model.Course{}
+		fmt.Println("There are no records with this connection in the table. Trying to add a record.")
+		fmt.Println(err.Error())
 
-	for rows.Next() {
-
-		course := model.Course{}
-
-		err = rows.Scan(&course.ID, &course.Name, &course.Description, &course.TeacherReg, &course.Reg)
+		insert, err := db.Prepare("INSERT INTO teachers_courses (teacher_id, course_id) VALUES (?, ?)")
 
 		if err != nil {
-			log.Fatal(err.Error())
-			continue
+			fmt.Println(err.Error())
+			return 0
 		}
 
-		courses = append(courses, course)
+		result, err := insert.Exec(teacherID, courseID)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			fmt.Println("The teacher or course index is out of bound.")
+			return 0
+		}
+
+		rowsEffected, err := result.RowsAffected()
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return 0
+		}
+
+		fmt.Println("Record added.")
+
+		return rowsEffected
+
+	} else {
+
+		fmt.Println("Error. There is already a record found. Trying to delete the record.")
+
+		extract, err := db.Prepare("DELETE FROM teachers_courses WHERE teacher_id = ? AND course_id = ?")
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return 0
+		}
+
+		result, err := extract.Exec(teacherID, courseID)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			fmt.Println("The teacher or course index is out of bound.")
+			return 0
+		}
+
+		rowsEffected, err := result.RowsAffected()
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return 0
+		}
+
+		fmt.Println("Record deleted.")
+
+		return rowsEffected
+
 	}
 
-	return courses
+}
+
+func CheckConnectionCoursesTeachers(teacherID int, courseID int) bool {
+
+	db := connect()
+
+	defer db.Close()
+
+	rowsCheck := db.QueryRow("SELECT * FROM teachers_courses WHERE teacher_id LIKE ? AND course_id LIKE ? LIMIT 1", teacherID, courseID)
+
+	var tch, crs int
+
+	err := rowsCheck.Scan(&tch, &crs)
+
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
+
+}
+
+func ConnectionCoursesStudents(studentID int, courseID int) int64 {
+
+	db := connect()
+
+	defer db.Close()
+
+	// check if there are records to compare
+	// if there is a record in the database it is deleted and if there is not a record in the database it is created
+
+	// fmt.Println("student id :", studentID)
+	// fmt.Println("course id :", courseID)
+
+	rowsCheck := db.QueryRow("SELECT * FROM students_courses WHERE student_id LIKE ? AND course_id LIKE ? LIMIT 1", studentID, courseID)
+
+	var tch, crs int
+
+	err := rowsCheck.Scan(&tch, &crs)
+
+	if err != nil {
+
+		fmt.Println("There are no records with this connection in the table. Trying to add a record.")
+		fmt.Println(err.Error())
+
+		insert, err := db.Prepare("INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)")
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return 0
+		}
+
+		result, err := insert.Exec(studentID, courseID)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			fmt.Println("The student or course index is out of bound.")
+			return 0
+		}
+
+		rowsEffected, err := result.RowsAffected()
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return 0
+		}
+
+		fmt.Println("Record added.")
+
+		return rowsEffected
+
+	} else {
+
+		fmt.Println("Error. There is already a record found. Trying to delete the record.")
+
+		extract, err := db.Prepare("DELETE FROM students_courses WHERE student_id = ? AND course_id = ?")
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return 0
+		}
+
+		result, err := extract.Exec(studentID, courseID)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			fmt.Println("The student or course index is out of bound.")
+			return 0
+		}
+
+		rowsEffected, err := result.RowsAffected()
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return 0
+		}
+
+		fmt.Println("Record deleted.")
+
+		return rowsEffected
+
+	}
+
+}
+
+func CheckConnectionCoursesStudents(studentID int, courseID int) bool {
+
+	db := connect()
+
+	defer db.Close()
+
+	rowsCheck := db.QueryRow("SELECT * FROM students_courses WHERE student_id LIKE ? AND course_id LIKE ? LIMIT 1", studentID, courseID)
+
+	var std, crs int
+
+	err := rowsCheck.Scan(&std, &crs)
+
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
 
 }
