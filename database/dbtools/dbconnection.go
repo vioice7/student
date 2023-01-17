@@ -66,6 +66,7 @@ func SelectAllStudents() []model.Student {
 	}
 
 	return students
+
 }
 
 func SelectStudentBasedName(name string) (model.Student, error) {
@@ -1327,4 +1328,74 @@ func CheckConnectionCoursesStudents(studentID int, courseID int) bool {
 		return true
 	}
 
+}
+
+func SelectAllCoursesTeacher(teacherID int) []model.Course {
+
+	db := connect()
+
+	defer db.Close()
+
+	rows, err := db.Query(`SELECT courses.id, courses.name, courses.description, courses.reg
+							FROM courses
+							JOIN teachers_courses ON (teachers_courses.course_id = courses.id)
+							JOIN teachers ON (teachers.id = teachers_courses.teacher_id)
+							WHERE teachers.id = ?`, teacherID)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	courses := []model.Course{}
+
+	for rows.Next() {
+
+		course := model.Course{}
+
+		err = rows.Scan(&course.ID, &course.Name, &course.Description, &course.Reg)
+
+		if err != nil {
+			log.Fatal(err.Error())
+			continue
+		}
+
+		courses = append(courses, course)
+	}
+
+	return courses
+}
+
+func SelectAllCoursesStudent(studentID int) []model.Course {
+
+	db := connect()
+
+	defer db.Close()
+
+	rows, err := db.Query(`SELECT courses.id, courses.name, courses.description, courses.reg
+							FROM courses
+							JOIN students_courses ON (students_courses.course_id = courses.id)
+							JOIN students ON (students.id = students_courses.student_id)
+							WHERE students.id = ?`, studentID)
+
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	courses := []model.Course{}
+
+	for rows.Next() {
+
+		course := model.Course{}
+
+		err = rows.Scan(&course.ID, &course.Name, &course.Description, &course.Reg)
+
+		if err != nil {
+			log.Fatal(err.Error())
+			continue
+		}
+
+		courses = append(courses, course)
+	}
+
+	return courses
 }

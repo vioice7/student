@@ -1,0 +1,97 @@
+{{define "title"}}Show All Courses That A Student Attends{{end}}
+
+{{define "content"}}
+<h3>Show All Courses That A Student Attends</h3>
+<br>
+<a href="/" class="btn btn-default">Menu</a>
+
+<br>
+<br>
+
+<form name="mycourseformular" id="mycourseformular">
+    <label for="student">Select Student Name and Registration:</label><br>
+    <select name="student" id="student" class="form-control" onfocus="this.selectedIndex = -1;">
+      <option value=""></option>
+    </select>
+    <br><br>
+    <input type="submit" value="Show Courses" onclick="getData(); return false" class="btn btn-default">
+    <input type="reset" value="Reset" onclick="clearData()" class="btn btn-default">
+</form>
+
+<br>
+<br>
+
+<table class="table table-bordered">
+    <tbody id="data"></tbody>
+</table>
+
+<script>
+
+    getAllStudentNameReg();
+
+    async function getAllStudentNameReg() {
+
+        var adress = "";
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"];
+        });
+
+        const response = await fetch(adress + '/rest/api/students');
+
+        const data = await response.json();
+
+        var temp = "";
+
+        // make the list option
+
+        for(i = 0; i < data.length; i++)  
+        {
+                temp += "<option value='" + data[i].ID + "' >" + data[i].Name + " " + data[i].Reg + "</option>";
+        }
+
+        if(temp == "") {
+            document.getElementById("student").outerHTML="<strong>There are no students in the database!</strong>";
+        } else {
+            document.getElementById("student").innerHTML=temp;
+        }
+
+    }
+  
+    async function getData(){
+  
+        var adress = "";
+  
+        $.getJSON('configHtmlServer.json', function(data) {         
+          adress = data["adress"];
+        });
+
+        var studentId = document.getElementById("student").value;
+  
+         const response = await fetch(adress + '/rest/api/courses/student/' + studentId);
+
+         const data = await response.json();
+
+         // console.log(data);
+
+         var temp="<tr><th>ID</th><th>Course Name</th><th>Course Description</th><th>Course Registration Number</th></tr>";
+         for(i = 0; i < data.length; i++)
+         {
+            temp+="<tr>";
+            temp+="<td>" + data[i].ID + "</td>";
+            temp+="<td>" + data[i].Name + "</td>";
+            temp+="<td>" + data[i].Description + "</td>";
+            temp+="<td>" + data[i].Reg + "</td>";
+            temp+="</tr>";
+         }
+  
+         document.getElementById("data").innerHTML=temp;
+
+   }
+
+   async function clearData(){
+      document.getElementById("data").innerHTML="";
+    }
+
+  </script>
+{{end}}

@@ -96,6 +96,12 @@ func restConfig(router *mux.Router) {
 	//localhost:8080/rest/api/course/edit
 	restRouter.Methods("POST").Path("/course/edit").HandlerFunc(UpdateCourse)
 
+	//localhost:8080/rest/api/courses/teacher/{id}
+	restRouter.Methods("GET").Path("/courses/teacher/{id}").HandlerFunc(SelectAllCoursesTeacher)
+
+	//localhost:8080/rest/api/courses/student/{id}
+	restRouter.Methods("GET").Path("/courses/student/{id}").HandlerFunc(SelectAllCoursesStudent)
+
 	// ---
 	// Teacher Course Link API
 	// ---
@@ -210,6 +216,12 @@ func restConfig(router *mux.Router) {
 
 	//localhost:8080/link_course_student.html
 	httpRouter.HandleFunc("/link_course_student.html", linkCourseStudentTemplateHandling)
+
+	//localhost:8080/show_all_courses_of_a_teacher.html
+	httpRouter.HandleFunc("/show_all_courses_of_a_teacher.html", showAllCoursesOfATeacherTemplateHandling)
+
+	//localhost:8080/show_all_courses_that_a_student_attends.html
+	httpRouter.HandleFunc("/show_all_courses_that_a_student_attends.html", showAllCoursesThatAStudentAttendsTemplateHandling)
 
 }
 

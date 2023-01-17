@@ -599,6 +599,42 @@ func CheckStudentCourseLink(response http.ResponseWriter, request *http.Request)
 
 }
 
+func SelectAllCoursesTeacher(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	id, err := strconv.Atoi(vars["id"])
+
+	if err != nil {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "Courses not found.")
+	}
+
+	courses := dbtools.SelectAllCoursesTeacher(id)
+
+	json.NewEncoder(response).Encode(courses)
+
+}
+
+func SelectAllCoursesStudent(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	id, err := strconv.Atoi(vars["id"])
+
+	if err != nil {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "Courses not found.")
+	}
+
+	courses := dbtools.SelectAllCoursesStudent(id)
+
+	json.NewEncoder(response).Encode(courses)
+
+}
+
 // ---
 // HTML Files Template Handling
 // ---
@@ -1123,6 +1159,47 @@ func linkCourseStudentTemplateHandling(response http.ResponseWriter, request *ht
 	files := []string{
 		"templates/base_template.html",
 		"templates/course/link_course_student_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+
+}
+
+func showAllCoursesOfATeacherTemplateHandling(response http.ResponseWriter, request *http.Request) {
+	files := []string{
+		"templates/base_template.html",
+		"templates/course/show_all_course_teacher_template.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(response, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(response, "Internal Server Error", 500)
+	}
+}
+
+func showAllCoursesThatAStudentAttendsTemplateHandling(response http.ResponseWriter, request *http.Request) {
+	files := []string{
+		"templates/base_template.html",
+		"templates/course/show_all_course_student_template.html",
 	}
 
 	ts, err := template.ParseFiles(files...)
