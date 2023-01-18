@@ -8,13 +8,48 @@
 <br>
 <br>
 <form name="mycourseformular" id="mycourseformular">
-  <label for="id">Course ID:</label><br>
-  <input type="number" id="idcourse" name="id" value=""><br><br>
-  <input type="submit" onclick="deleteByID()" value="Delete course" class="btn btn-default">
+  <label for="course">Course ID:</label><br>
+  <select name="course" id="course" class="form-control" onfocus="this.selectedIndex = -1;">
+    <option value=""></option>
+  </select>
+  <br><br>
+  <input type="submit" onclick="deleteByID()" value="Delete Course" class="btn btn-default">
   <input type="reset" value="Reset" class="btn btn-default">
 </form>
 
 <script>
+
+    getAllCourses();
+
+    async function getAllCourses() {
+
+        var adress = "";
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"];
+        });
+
+        const response = await fetch(adress + '/rest/api/courses');
+
+        const data = await response.json();
+
+        var temp = "";
+
+        // make the list option
+
+        for(i = 0; i < data.length; i++)  
+        {
+                temp += "<option value='" + data[i].ID + "' >" + data[i].Name + " " + data[i].Reg + "</option>";
+        }
+
+        if(temp == "") {
+            document.getElementById("course").outerHTML="<strong>There are no courses in the database!</strong>";
+        } else {
+            document.getElementById("course").innerHTML=temp;
+        }
+
+    }
+
     async function deleteByID() {
 
         var adress = ""
@@ -23,13 +58,17 @@
             adress = data["adress"]
         });
 
-        var id = document.getElementById('idcourse').value;
+        var id = document.getElementById('course').value;
 
-        console.log(document.getElementById('idcourse').value)
+        // console.log(document.getElementById('course').value);
 
         fetch(adress + '/rest/api/course/deleteid/' + id, {
              method: 'DELETE',
-            }).then(res => res.text()).then(res => console.log(res))
-        }
+            }).then(res => res.text()).then(res => console.log(res));
+    
+        // refresh course list
+        getAllCourses();
+
+    }
   </script>
 {{end}}

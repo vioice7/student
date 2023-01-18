@@ -8,13 +8,48 @@
 <br>
 <br>
 <form name="myteacherformular" id="myteacherformular">
-  <label for="id">teacher ID:</label><br>
-  <input type="number" id="idteacher" name="id" value=""><br><br>
+  <label for="teacher">Teacher ID:</label><br>
+  <select name="teacher" id="teacher" class="form-control" onfocus="this.selectedIndex = -1;">
+    <option value=""></option>
+  </select>
+  <br><br>
   <input type="submit" onclick="deleteByID()" value="Delete Teacher" class="btn btn-default">
   <input type="reset" value="Reset" class="btn btn-default">
 </form>
 
 <script>
+
+    getAllTeachers();
+
+    async function getAllTeachers() {
+
+        var adress = "";
+
+        $.getJSON('configHtmlServer.json', function(data) {         
+            adress = data["adress"];
+        });
+
+        const response = await fetch(adress + '/rest/api/teachers');
+
+        const data = await response.json();
+
+        var temp = "";
+
+        // make the list option
+
+        for(i = 0; i < data.length; i++)  
+        {
+                temp += "<option value='" + data[i].ID + "' >" + data[i].Name + " " + data[i].Reg + "</option>";
+        }
+
+        if(temp == "") {
+            document.getElementById("teacher").outerHTML="<strong>There are no teachers in the database!</strong>";
+        } else {
+            document.getElementById("teacher").innerHTML=temp;
+        }
+
+    }
+
     async function deleteByID() {
 
         var adress = ""
@@ -23,13 +58,17 @@
             adress = data["adress"]
         });
 
-        var id = document.getElementById('idteacher').value;
+        var id = document.getElementById('teacher').value;
 
-        console.log(document.getElementById('idteacher').value)
+        // console.log(document.getElementById('teacher').value);
 
         fetch(adress + '/rest/api/teacher/deleteid/' + id, {
              method: 'DELETE',
-            }).then(res => res.text()).then(res => console.log(res))
-        }
+            }).then(res => res.text()).then(res => console.log(res));
+
+        // refresh course list
+        getAllTeachers();
+            
+    }
   </script>
 {{end}}

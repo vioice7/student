@@ -20,6 +20,7 @@ func DBInitilize(dn, dsn string) {
 
 	driverName = dn
 	dataSourceName = dsn
+
 }
 
 func connect() (db *sql.DB) {
@@ -997,7 +998,7 @@ func DeleteCourseId(id int) int64 {
 
 	// ---
 
-	delete, err := db.Prepare("delete from students_courses where student_id = ?")
+	delete, err := db.Prepare("delete from students_courses where course_id = ?")
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -1009,7 +1010,7 @@ func DeleteCourseId(id int) int64 {
 		log.Fatal(err.Error())
 	}
 
-	delete, err = db.Prepare("delete from teachers_courses where teacher_id = ?")
+	delete, err = db.Prepare("delete from teachers_courses where course_id = ?")
 
 	if err != nil {
 		log.Fatal(err.Error())
