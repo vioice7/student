@@ -103,7 +103,9 @@ func SaveStudent(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	dbtools.SaveStudent(student)
+	studentCheck := dbtools.SaveStudent(student)
+
+	json.NewEncoder(response).Encode(studentCheck)
 
 }
 
@@ -121,7 +123,9 @@ func UpdateStudent(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	dbtools.UpdateStudent(student)
+	studentCheck := dbtools.UpdateStudent(student)
+
+	json.NewEncoder(response).Encode(studentCheck)
 
 }
 
@@ -202,7 +206,9 @@ func SaveTeacher(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	dbtools.SaveTeacher(teacher)
+	teacherCheck := dbtools.SaveTeacher(teacher)
+
+	json.NewEncoder(response).Encode(teacherCheck)
 
 }
 
@@ -253,7 +259,9 @@ func UpdateTeacher(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	dbtools.UpdateTeacher(teacher)
+	teacherCheck := dbtools.UpdateTeacher(teacher)
+
+	json.NewEncoder(response).Encode(teacherCheck)
 
 }
 
@@ -358,7 +366,9 @@ func SaveCourse(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	dbtools.SaveCourse(course)
+	courseCheck := dbtools.SaveCourse(course)
+
+	json.NewEncoder(response).Encode(courseCheck)
 
 }
 
@@ -388,6 +398,27 @@ func SaveMultipleCourses(response http.ResponseWriter, request *http.Request) {
 
 }
 
+func SelectCourseBasedId(response http.ResponseWriter, request *http.Request) {
+
+	vars := mux.Vars(request)
+
+	id, ok := vars["id"]
+
+	if !ok {
+		response.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintln(response, "Course not found.")
+	}
+
+	course, err := dbtools.SelectCourseBasedId(id)
+
+	if err != nil {
+		json.NewEncoder(response).Encode("Course not found.")
+	} else {
+		json.NewEncoder(response).Encode(course)
+	}
+}
+
 func UpdateCourse(response http.ResponseWriter, request *http.Request) {
 
 	var course model.Course
@@ -402,7 +433,9 @@ func UpdateCourse(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	dbtools.UpdateCourse(course)
+	courseCheck := dbtools.UpdateCourse(course)
+
+	json.NewEncoder(response).Encode(courseCheck)
 
 }
 

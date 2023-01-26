@@ -7,6 +7,7 @@
 <br>
 <br>
 <br>
+
 <form name="mystudentformular" id="mystudentformular">
   <label for="name">Student Name:</label><br>
   <input type="text" id="name" name="name" value=""><br><br>
@@ -17,6 +18,8 @@
   <input type="submit" value="Create student" class="btn btn-default">
   <input type="reset" value="Reset" class="btn btn-default">
 </form>
+
+<div id="data" class="alert alert-warning"></div>
 
 <script>
     function convertFormToJSON(form) {
@@ -52,6 +55,17 @@
       var dataText = JSON.stringify(json) 
     
       xhr.send(dataText);
+
+      xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+          if(xhr.responseText == 0) {
+            document.getElementById("data").innerHTML="There is already a student with that registration.";
+          } else {
+            document.getElementById("data").innerHTML="A new student has been added.";
+          }
+        }
+      }
+
     });
 </script>
 {{end}}

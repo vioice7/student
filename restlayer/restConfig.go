@@ -96,6 +96,9 @@ func restConfig(router *mux.Router) {
 	//localhost:8080/rest/api/course/edit
 	restRouter.Methods("POST").Path("/course/edit").HandlerFunc(UpdateCourse)
 
+	//localhost:8080/rest/api/course/id/{id}
+	restRouter.Methods("GET").Path("/course/id/{id}").HandlerFunc(SelectCourseBasedId)
+
 	//localhost:8080/rest/api/courses/teacher/{id}
 	restRouter.Methods("GET").Path("/courses/teacher/{id}").HandlerFunc(SelectAllCoursesTeacher)
 

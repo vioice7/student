@@ -124,9 +124,11 @@ func SaveStudent(student model.Student) int64 {
 
 	defer db.Close()
 
+	studentCheck := model.Student{}
+
 	rows := db.QueryRow("select reg from students where reg = ?", student.Reg)
 
-	errDupl := rows.Scan(&student.Reg)
+	errDupl := rows.Scan(&studentCheck.Reg)
 
 	// if there is no record don't add a record and return
 
@@ -168,11 +170,13 @@ func UpdateStudent(student model.Student) int64 {
 
 	defer db.Close()
 
+	// make new model for comparing
+
+	studentCheck := model.Student{}
+
 	// check if there are records to compare
 
 	rowsCheck := db.QueryRow("select id from students where id = ?", student.ID)
-
-	studentCheck := model.Student{}
 
 	errCheck := rowsCheck.Scan(&studentCheck.ID)
 
@@ -183,15 +187,32 @@ func UpdateStudent(student model.Student) int64 {
 
 	// check for unique reg
 
-	rowsDupl := db.QueryRow("select reg from students where reg = ?", student.Reg)
+	checkRegID := ""
 
-	errDupl := rowsDupl.Scan(&student.Reg)
+	rowsDuplRegCheck := db.QueryRow("select reg from students where reg = ? and id = ?", student.Reg, student.ID)
 
-	// if there is a duplicate entry don't add a record and return
+	errDuplRegID := rowsDuplRegCheck.Scan(&studentCheck.Reg)
 
-	if errDupl == nil {
-		fmt.Println("Duplicate entry in database! No records added!")
-		return 0
+	if errDuplRegID != nil {
+
+		fmt.Println(errDuplRegID.Error())
+
+		checkRegID = errDuplRegID.Error()
+
+	}
+
+	if checkRegID == "sql: no rows in result set" {
+
+		rowsDuplRegCheck := db.QueryRow("select reg from students where reg = ?", student.Reg)
+
+		errDuplReg := rowsDuplRegCheck.Scan(&studentCheck.Reg)
+
+		if errDuplReg != nil {
+			fmt.Println(errDuplReg.Error())
+		} else {
+			return 0
+		}
+
 	}
 
 	// create a new model to compare
@@ -461,9 +482,11 @@ func SaveTeacher(teacher model.Teacher) int64 {
 
 	defer db.Close()
 
+	teacherCheck := model.Teacher{}
+
 	rows := db.QueryRow("select reg from teachers where reg = ?", teacher.Reg)
 
-	errDupl := rows.Scan(&teacher.Reg)
+	errDupl := rows.Scan(&teacherCheck.Reg)
 
 	// if there is no record don't add a record and return
 
@@ -614,11 +637,13 @@ func UpdateTeacher(teacher model.Teacher) int64 {
 
 	defer db.Close()
 
+	// make new model for comparing
+
+	teacherCheck := model.Teacher{}
+
 	// check if there are records to compare
 
 	rowsCheck := db.QueryRow("select id from teachers where id = ?", teacher.ID)
-
-	teacherCheck := model.Teacher{}
 
 	errCheck := rowsCheck.Scan(&teacherCheck.ID)
 
@@ -629,15 +654,32 @@ func UpdateTeacher(teacher model.Teacher) int64 {
 
 	// check for unique reg
 
-	rowsDupl := db.QueryRow("select reg from teachers where reg = ?", teacher.Reg)
+	checkRegID := ""
 
-	errDupl := rowsDupl.Scan(&teacher.Reg)
+	rowsDuplRegCheck := db.QueryRow("select reg from teachers where reg = ? and id = ?", teacher.Reg, teacher.ID)
 
-	// if there is a duplicate entry don't add a record and return
+	errDuplRegID := rowsDuplRegCheck.Scan(&teacherCheck.Reg)
 
-	if errDupl == nil {
-		fmt.Println("Duplicate entry in database! No records added!")
-		return 0
+	if errDuplRegID != nil {
+
+		fmt.Println(errDuplRegID.Error())
+
+		checkRegID = errDuplRegID.Error()
+
+	}
+
+	if checkRegID == "sql: no rows in result set" {
+
+		rowsDuplRegCheck := db.QueryRow("select reg from teachers where reg = ?", teacher.Reg)
+
+		errDuplReg := rowsDuplRegCheck.Scan(&teacherCheck.Reg)
+
+		if errDuplReg != nil {
+			fmt.Println(errDuplReg.Error())
+		} else {
+			return 0
+		}
+
 	}
 
 	// create a new model to compare
@@ -794,9 +836,11 @@ func SaveCourse(course model.Course) int64 {
 
 	defer db.Close()
 
-	rows := db.QueryRow("select reg from course where reg = ?", course.Reg)
+	courseCheck := model.Course{}
 
-	errDupl := rows.Scan(&course.Reg)
+	rows := db.QueryRow("select reg from courses where reg = ?", course.Reg)
+
+	errDupl := rows.Scan(&courseCheck.Reg)
 
 	// if there is no record don't add a record and return
 
@@ -1051,11 +1095,13 @@ func UpdateCourse(course model.Course) int64 {
 
 	defer db.Close()
 
+	// make new model for comparing
+
+	courseCheck := model.Course{}
+
 	// check if there are records to compare
 
 	rowsCheck := db.QueryRow("select id from courses where id = ?", course.ID)
-
-	courseCheck := model.Course{}
 
 	errCheck := rowsCheck.Scan(&courseCheck.ID)
 
@@ -1066,15 +1112,32 @@ func UpdateCourse(course model.Course) int64 {
 
 	// check for unique reg
 
-	rowsDupl := db.QueryRow("select reg from courses where reg = ?", course.Reg)
+	checkRegID := ""
 
-	errDupl := rowsDupl.Scan(&course.Reg)
+	rowsDuplRegCheck := db.QueryRow("select reg from courses where reg = ? and id = ?", course.Reg, course.ID)
 
-	// if there is a duplicate entry don't add a record and return
+	errDuplRegID := rowsDuplRegCheck.Scan(&courseCheck.Reg)
 
-	if errDupl == nil {
-		fmt.Println("Duplicate entry in database! No records added!")
-		return 0
+	if errDuplRegID != nil {
+
+		fmt.Println(errDuplRegID.Error())
+
+		checkRegID = errDuplRegID.Error()
+
+	}
+
+	if checkRegID == "sql: no rows in result set" {
+
+		rowsDuplRegCheck := db.QueryRow("select reg from courses where reg = ?", course.Reg)
+
+		errDuplReg := rowsDuplRegCheck.Scan(&courseCheck.Reg)
+
+		if errDuplReg != nil {
+			fmt.Println(errDuplReg.Error())
+		} else {
+			return 0
+		}
+
 	}
 
 	// create a new model to compare
@@ -1122,6 +1185,22 @@ func UpdateCourse(course model.Course) int64 {
 	}
 
 	return rowsEffected
+
+}
+
+func SelectCourseBasedId(id string) (model.Course, error) {
+
+	db := connect()
+
+	rows := db.QueryRow("select * from courses where id = ?", id)
+
+	defer db.Close()
+
+	course := model.Course{}
+
+	err := rows.Scan(&course.ID, &course.Name, &course.Description, &course.Reg)
+
+	return course, err
 
 }
 

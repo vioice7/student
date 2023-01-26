@@ -4,12 +4,15 @@
 <h3 class="">Edit Course</h3>
 <br>
 <a href="/" class="btn btn-default">Menu</a>
+
 <br>
 <br>
-<br>
+
 <form name="mycourseformular" id="mycourseformular">
   <label for="name">Course Id:</label><br>
-  <input type="text" id="id" name="id" value=""><br><br>
+  <select name="id" id="id" class="form-control" onchange="getData()" onfocus="this.selectedIndex = -1;">
+    <option value=""></option>
+  </select><br>
   <label for="name">New course name:</label><br>
   <input type="text" id="name" name="name" value=""><br><br>
   <label for="description">New course description:</label><br>
@@ -17,11 +20,77 @@
   <label for="reg">New course registration id:</label><br>
   <input type="text" id="reg" name="reg" value=""><br><br>
   <input type="submit" value="Update" class="btn btn-default">
-  <input type="reset" value="Reset" class="btn btn-default">
+  <input type="reset" value="Reset" onclick="getAllCourses()" class="btn btn-default">
 </form>
 
+<div id="data" class="alert alert-warning"></div>
+
 <script>
-    function convertFormToJSON(form) {
+
+getAllCourses();
+
+async function getAllCourses() {
+
+    var adress = "";
+
+    $.getJSON('configHtmlServer.json', function(data) {         
+        adress = data["adress"];
+    });
+
+    const response = await fetch(adress + '/rest/api/courses');
+
+    const data = await response.json();
+
+    var temp = "";
+
+    // make the list option
+
+    for(i = 0; i < data.length; i++)  
+    {
+            temp += "<option value='" + data[i].ID + "' >" + data[i].ID + " " + data[i].Name + " " + data[i].Reg + "</option>";
+    }
+
+    if(temp == "") {
+        document.getElementById("id").outerHTML="<strong>There are no courses in the database!</strong>";
+    } else {
+        document.getElementById("id").innerHTML=temp;
+    }
+
+}
+
+async function getData() {
+  
+      var adress = ""
+
+      $.getJSON('configHtmlServer.json', function(data) {         
+          adress = data["adress"]
+      });
+
+      var id = document.getElementById('id').value;
+
+      const response = await fetch(adress + '/rest/api/course/id/' + id);
+    
+      const data = await response.json();
+
+      var temp = "";
+
+      if (data == "Course not found.") {
+        temp += "<p>Course not found.</p>";
+      }
+
+      else {
+
+        document.getElementById("name").value = data.Name;
+        document.getElementById("description").value = data.Description;
+        document.getElementById("reg").value = data.Reg;
+        
+      }
+
+      document.getElementById("data").innerHTML=temp;
+
+}
+
+function convertFormToJSON(form) {
       const array = $(form).serializeArray(); // Encodes the set of form elements as an array of names and values.
       const json = {};
       $.each(array, function () {
@@ -33,35 +102,43 @@
       return json;
     }
 
-    $("#mycourseformular").on("submit", function (e) {
-      e.preventDefault();
-      const form = $(e.target);
-      const json = convertFormToJSON(form);
-      console.log(json);
+$("#mycourseformular").on("submit", function (e) {
+  e.preventDefault();
+  const form = $(e.target);
+  const json = convertFormToJSON(form);
+  console.log(json);
 
-      var xhr = new XMLHttpRequest();
-      var url = "/rest/api/course/edit";
-      xhr.open("POST", url, true);
-      xhr.setRequestHeader("Content-Type", "application/json");
+  var xhr = new XMLHttpRequest();
+  var url = "/rest/api/course/edit";
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
 
-      // sanitize numbers for json object instead of strings
+  // sanitize numbers for json object instead of strings
 
-      for(var prop in json){
-        if(json.hasOwnProperty(prop) && !isNaN(json[prop])){
-            json[prop] = +json[prop];   
-          }
+  for(var prop in json){
+    if(json.hasOwnProperty(prop) && !isNaN(json[prop])){
+        json[prop] = +json[prop];   
       }
-      
-      console.log(JSON.stringify(json, null, 2));
+  }
+  
+  console.log(JSON.stringify(json, null, 2));
 
-      // transfor json obj to text
+  // transform json obj to text
 
-      var dataText = JSON.stringify(json) 
+  var dataText = JSON.stringify(json) 
 
-      // alert(dataText)
-   
-      xhr.send(dataText);
-      
-    });
+  xhr.send(dataText);
+
+  xhr.onreadystatechange = function() {
+  if (xhr.readyState == XMLHttpRequest.DONE) {
+      if(xhr.responseText == 0) {
+        document.getElementById("data").innerHTML="There is already a course with that registration.";
+      } else {
+        document.getElementById("data").innerHTML="Course data has been modified.";
+      }
+    }
+  }
+});
+
 </script>
 {{end}}
