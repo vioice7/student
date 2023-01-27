@@ -19,7 +19,7 @@
   <label for="reg">New student registration id:</label><br>
   <input type="text" id="reg" name="reg" value=""><br><br>
   <input type="submit" value="Update" class="btn btn-default">
-  <input type="reset" value="Reset" onclick="getAllStudents()" class="btn btn-default">
+  <input type="reset" value="Reset" onclick="getAllStudents();resetAlert()" class="btn btn-default">
 </form>
 
 <div id="data" class="alert alert-warning"></div>
@@ -85,7 +85,7 @@ async function getData() {
     
   }
 
-  document.getElementById("data").innerHTML=temp;
+    document.getElementById("data").innerHTML=temp;
 
 }
 
@@ -100,6 +100,10 @@ async function getData() {
       }
     });
     return json;
+  }
+
+  function resetAlert() {
+        document.getElementById("data").innerHTML="";
   }
 
   $("#mystudentformular").on("submit", function (e) {

@@ -20,7 +20,7 @@
   <label for="reg">New teacher registration id:</label><br>
   <input type="text" id="reg" name="reg" value=""><br><br>
   <input type="submit" value="Update" class="btn btn-default">
-  <input type="reset" value="Reset" onclick="getAllTeachers()" class="btn btn-default">
+  <input type="reset" value="Reset" onclick="getAllTeachers();resetAlert()" class="btn btn-default">
 </form>
 
 <div id="data" class="alert alert-warning"></div>
@@ -100,6 +100,10 @@ async function getData() {
       }
     });
     return json;
+  }
+
+  function resetAlert() {
+        document.getElementById("data").innerHTML="";
   }
 
   $("#myteacherformular").on("submit", function (e) {

@@ -15,7 +15,7 @@
   <label for="reg">Teacher Registration ID:</label><br>
   <input type="text" id="reg" name="reg" value="" required><br><br>
   <input type="submit" value="Create Teacher" class="btn btn-default">
-  <input type="reset" value="Reset" class="btn btn-default">
+  <input type="reset" value="Reset" onclick="resetAlert()" class="btn btn-default">
 </form>
 
 <div id="data" class="alert alert-warning"></div>
@@ -31,6 +31,10 @@
         }
       });
       return json;
+    }
+
+    function resetAlert() {
+        document.getElementById("data").innerHTML="";
     }
 
     $("#myteacherformular").on("submit", function (e) {

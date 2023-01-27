@@ -20,7 +20,7 @@
   <label for="reg">New course registration id:</label><br>
   <input type="text" id="reg" name="reg" value=""><br><br>
   <input type="submit" value="Update" class="btn btn-default">
-  <input type="reset" value="Reset" onclick="getAllCourses()" class="btn btn-default">
+  <input type="reset" value="Reset" onclick="getAllCourses();resetAlert()" class="btn btn-default">
 </form>
 
 <div id="data" class="alert alert-warning"></div>
@@ -100,6 +100,10 @@ function convertFormToJSON(form) {
         }
       });
       return json;
+    }
+
+    function resetAlert() {
+        document.getElementById("data").innerHTML="";
     }
 
 $("#mycourseformular").on("submit", function (e) {
