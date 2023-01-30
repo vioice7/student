@@ -8,7 +8,11 @@
     <br>
     <br>
     <a href="javascript:deleteAll();" class="btn btn-default">Clear all courses</a>
-
+    <br>
+    <br>
+    <br>
+    <div id="data" class="alert alert-warning"></div>
+    
     <script>
         async function deleteAll() {
  
@@ -18,9 +22,17 @@
              adress = data["adress"]
          });
  
-         fetch(adress + '/rest/api/course/deleteall', {
+        fetch(adress + '/rest/api/course/deleteall', {
               method: 'DELETE',
-             }).then(res => res.text()).then(res => console.log(res))
-         }
+             }).then(res => res.text()).then(res => alertResult(res))
+        }
+
+        function alertResult(res) {
+            console.log(res);
+            if(res != 0) {
+                document.getElementById("data").innerHTML = "All " + res + " course(s) were deleted.";
+            }
+        }
+
      </script>
 {{end}}
