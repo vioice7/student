@@ -10,6 +10,19 @@
   <title>{{template "title" .}}</title>
 </head>
 <body>
+
+  <style>
+    
+    li:hover {
+      background-color: lightblue;
+    }
+
+    li a:hover {
+        color: white;
+    }
+
+  </style>
+
   <div class="container">
     {{template "content" .}}
   </div>

@@ -1,4 +1,4 @@
 {
     "driverName":"mysql",
-    "dataSourceName":"root:@/person"
+    "dataSourceName":"root:@/univmanagement"
 }
