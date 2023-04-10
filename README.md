@@ -1,4 +1,4 @@
-# Simple Student Managing App 
+# Simple University Managing App 
 ## RESTApi Server, HTTP Server, MySQL Server
 ---
 * This is a simple management CRUD app for a university that uses Go RESTApi Server, Go HTTP Server and MySql Server
